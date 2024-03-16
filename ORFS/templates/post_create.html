@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Create{% endblock title %}
+{% block main-content %}
+
+<div class="container mt-1">
+    <h1 class="text-center alert alert-success">Create Post</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+    
+            <form method="POST" enctype="multipart/form-data">
+     
+                <!-- Security token -->
+                {% csrf_token %}
+             
+                <!-- Using the formset -->
+                {% comment %} {{ form.as_p }} {% endcomment %}
+
+               <p>{{ form.title.label_tag }}{{ form.title }}</p>
+                <p>{{ form.province.label_tag }}{{ form.province }}</p>
+                <p>{{ form.district.label_tag }}{{ form.district }}</p>
+                <p>{{ form.city.label_tag }}{{ form.city }}</p>
+                <p>{{ form.street.label_tag }}{{ form.street }}</p>
+                <p>{{ form.latitude.label_tag }}{{ form.latitude }}<p>
+                <p>{{ form.longitude.label_tag }}{{ form.longitude }}<button type="button" id="auto-fill-location" class="btn btn-secondary">Auto Fill Location</button></p>
+                
+                <div id="map" style="height: 400px;">
+
+                </div>
+                </p>{{ form.fare.label_tag }}{{ form.fare }}</p>
+                <p>{{ form.description.label_tag }}{{form.description}}</p>
+                <p>{{ form.identification_document.label_tag }}{{form.identification_document}}
+                <p>{{ form.images.label_tag }}{{ form.images }}</p>
+
+                 
+                
+                
+
+
+                <input type="submit" class="btn btn-primary" value="Submit">
+                <a href="{% url "home" %}"class="btn btn-danger ">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        // Initialize the map with a default view
+        var map = L.map('map').setView([27.6974, 85.3318], 13);
+
+        // Add OpenStreetMap tiles as the base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        navigator.geolocation.getCurrentPosition(success,error)
+
+        let marker, circle, zoomed;
+
+        function success(pos){
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const accuracy = pos.coords.accuracy;
+
+            if(marker){
+                map.removeLayer(marker);
+                map.removeLayer(circle);
+            }
+
+            marker = L.marker([lat,lng]).addTo(map);
+            circle = L.circle([lat,lng],{radius: accuracy}).addTo(map);
+
+            if(!zoomed){
+                zoomed = map.fitBounds(circle.getBounds());
+            }
+           
+            map.setView([lat,lng]);
+        }
+
+        function error(err){
+            if(err.code === 1){
+                alert("Please allow geolocation access");
+            } else{
+                alert("Cannot get current location")
+            }
+        }
+
+        // Function to update location field in the form
+        function updateLocationField(lat, lng) {
+            // Get the location field in the form
+            var locationField = document.getElementById('id_location');
+            
+            // Update the value of the location field with the latitude and longitude
+            locationField.value = lat + ',' + lng;
+        }
+    
+        // Function to handle marker click event
+        function onMarkerClick(e) {
+            // Get the latitude and longitude of the marker's position
+            var lat = e.latlng.lat.toFixed(6);
+            var lng = e.latlng.lng.toFixed(6);
+    
+            // Update the location field in the form
+            updateLocationField(lat, lng);
+        }
+    
+        // Add marker click event listener
+        map.on('click', function(e) {
+            if (marker) {
+                // If marker exists, remove it from the map
+                map.removeLayer(marker);
+            }
+            
+            // Create a new marker at the clicked position
+            marker = L.marker(e.latlng).addTo(map);
+    
+            // Add click event listener to the marker
+            marker.on('click', onMarkerClick);
+            
+            // Trigger the marker click event to update the location field initially
+            marker.fire('click');
+        });
+        
+    });
+    
+    
+</script>
+
+{% endblock main-content %}

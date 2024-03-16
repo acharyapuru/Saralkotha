@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block main-content %}
+
+<div class="container">
+    <h3 class="text-center alert alert-warning">Update Post</h3>
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                {% if post.images.all %}
+                <h2>Current Images</h2>
+                <div class="row">
+                    {% for image in post.images.all %}
+                    <div class="col-md-3">
+                        <img src="{{ image.image.url }}" alt="Post Image {{ forloop.counter }}" style="width: 100%; height: auto; max-height: 100px;" class="img-thumbnail">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <h2>Add New Images</h2>
+                <input type="file" name="images" multiple><br>
+                <button type="submit " class="btn btn-success mt-2">Update Post</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock main-content %}
