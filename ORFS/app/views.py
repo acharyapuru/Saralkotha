@@ -187,7 +187,7 @@ class PostDetailView(View):
         return HttpResponseRedirect('/')
     
 
-
+@method_decorator(login_required, name='dispatch')
 class PostUpdateView(View):
     def get(self,request,pk,*args, **kwargs):
         p = Post.objects.get(pk=pk)
@@ -220,7 +220,7 @@ class PostUpdateView(View):
 
             return redirect('post_detail', p.id)
         
-    
+@method_decorator(login_required, name='dispatch') 
 class ReportView(View):
     def get(self,request,*args, **kwargs):
         form = ReportForm()
