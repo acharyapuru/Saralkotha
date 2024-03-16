@@ -55,7 +55,9 @@
                 <a href="{% url "login" %}" class="btn btn-success">Login</a>
                 {% endif %}
                 </div>
+                {% if request.user.is_authenticated %}
                 <a href="{% url "report" post.id%}"class="btn btn-danger mt-4">Report Post</a>
+                {% endif %}
             </div>
         </div>
     </div>
