@@ -124,7 +124,7 @@ class HomeView(View):
             posts = Post.objects.filter(availability=True)
             post_info_list = []
             for post in posts:
-                post_info = {"id":post.id,"information":f"{post.title},{post.province},{post.district},{post.city},{post.location},{post.fare},{post.description}"}
+                post_info = {"id":post.id,"information":f"{post.title},{post.province},{post.district},{post.city},{post.latitude},{post.longitude},{post.fare},{post.description}"}
                 post_info_list.append(post_info)
             
             post_infos =[post["information"] for post in post_info_list]
